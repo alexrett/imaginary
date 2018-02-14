@@ -161,28 +161,26 @@ func Biglion(buf []byte, o ImageOptions) (Image, error) {
 		return Image{}, NewError("Missing required params: areawidth or areaheight", BadRequest)
 	}
 
-	w := o.Width
-	h := o.Height
-	o.Width = 0
-	o.Height = 0
 	opts := BimgOptions(o)
 	opts.Top = o.Top
 	opts.Left = o.Left
 	opts.AreaWidth = o.AreaWidth
 	opts.AreaHeight = o.AreaHeight
+	opts.Width = 0
+	opts.Height = 0
 
 	image, err := Process(buf, opts)
 	if err != nil {
 		return Image{}, NewError("Something go wrong", BadRequest)
 	}
-	nbuf := image.Body
+	cropBuf := image.Body
 
 	o.NoCrop = true
-	opts2 := BimgOptions(o)
-	opts2.Width = w
-	opts2.Height = h
+	resizeOpts := BimgOptions(o)
+	resizeOpts.Width = o.Width
+	resizeOpts.Height = o.Height
 
-	return Process(nbuf, opts2)
+	return Process(cropBuf, resizeOpts)
 }
 
 func Crop(buf []byte, o ImageOptions) (Image, error) {
