@@ -16,6 +16,7 @@ var OperationsMap = map[string]Operation{
 	"resize":    Resize,
 	"enlarge":   Enlarge,
 	"extract":   Extract,
+	"biglion":   Biglion,
 	"rotate":    Rotate,
 	"flip":      Flip,
 	"flop":      Flop,
@@ -153,6 +154,35 @@ func Extract(buf []byte, o ImageOptions) (Image, error) {
 	opts.AreaHeight = o.AreaHeight
 
 	return Process(buf, opts)
+}
+
+func Biglion(buf []byte, o ImageOptions) (Image, error) {
+	if o.AreaWidth == 0 || o.AreaHeight == 0 {
+		return Image{}, NewError("Missing required params: areawidth or areaheight", BadRequest)
+	}
+
+	w := o.Width
+	h := o.Height
+	o.Width = 0
+	o.Height = 0
+	opts := BimgOptions(o)
+	opts.Top = o.Top
+	opts.Left = o.Left
+	opts.AreaWidth = o.AreaWidth
+	opts.AreaHeight = o.AreaHeight
+
+	image, err := Process(buf, opts)
+	if err != nil {
+		return Image{}, NewError("Something go wrong", BadRequest)
+	}
+	nbuf := image.Body
+
+	o.NoCrop = true
+	opts2 := BimgOptions(o)
+	opts2.Width = w
+	opts2.Height = h
+
+	return Process(nbuf, opts2)
 }
 
 func Crop(buf []byte, o ImageOptions) (Image, error) {
