@@ -176,11 +176,10 @@ func Biglion(buf []byte, o ImageOptions) (Image, error) {
 	cropBuf := image.Body
 
 	o.NoCrop = true
-	resizeOpts := BimgOptions(o)
-	resizeOpts.Width = o.Width
-	resizeOpts.Height = o.Height
+	opts.Width = o.Width
+	opts.Height = o.Height
 
-	return Process(cropBuf, resizeOpts)
+	return Process(cropBuf, opts)
 }
 
 func Crop(buf []byte, o ImageOptions) (Image, error) {
